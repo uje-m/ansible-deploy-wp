@@ -1,0 +1,14 @@
+- hosts: all
+  gather_facts: False
+  
+  tasks:
+  - name: update apt
+    raw: test -e /usr/bin/python || (sudo apt -y update && apt install -y python-pip)
+
+- hosts: wordpress
+
+  roles:
+    - server
+    - php
+    - mysql
+    - wordpress

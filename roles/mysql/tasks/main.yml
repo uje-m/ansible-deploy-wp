@@ -1,0 +1,38 @@
+---
+# tasks file for mysql
+- name: Install packages required for ansible mysql modules on Ubuntu before 16.04
+  apt: name={{ item }} state=present
+  with_items:
+    - python-mysqldb
+  when: ansible_lsb.major_release|int < 16
+  become: yes
+
+- name: Install packages required for ansible mysql modules on Ubuntu 16.04
+  apt: name={{ item }} state=present
+  with_items:
+    - python3-dev
+    - libmysqlclient-dev
+  when: ansible_lsb.major_release|int >= 16
+  become: yes
+
+- name: Install Python package manager on Ubuntu 16.04
+  apt: name=python3-pip state=present
+  when: ansible_lsb.major_release|int >= 16
+  become: yes
+
+- name: Install the Python package required for ansible MySQL modules on Ubuntu 16.04
+  pip: name=mysqlclient
+  when: ansible_lsb.major_release|int >= 16
+  become: yes
+
+- name: Create mysql database
+  mysql_db: name={{ wp_mysql_db }} state=present
+  become: yes
+
+- name: Create mysql user
+  mysql_user: 
+    name={{ wp_mysql_user }} 
+    password={{ wp_mysql_password }} 
+    priv=*.*:ALL
+
+  become: yes  
